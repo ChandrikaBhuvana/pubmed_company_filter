@@ -20,12 +20,35 @@ This tool automates the process of:
 
 ## 🧰 Technologies Used
 
-- **Python 3.11**  
+- **Python 3.12**  
 - [**Poetry**](https://python-poetry.org/) – for dependency and project management  
 - [**Typer**](https://typer.tiangolo.com/) – for building the CLI interface  
 - `requests` – to make HTTP calls to PubMed APIs  
 - `pandas` – to format and save results in CSV  
 - `lxml` – for parsing PubMed XML metadata  
+- `rich` – for colorful CLI output
+
+---
+
+## 📁 Project Structure
+
+pubmed_company_filter/
+│
+├── pubmed_tool/
+│     ├── __init__.py
+│     └── cli.py             # Typer CLI entry point
+│
+├── pubmed/
+│   ├── __init__.py
+│   ├── api.py              # PubMed API logic
+│   ├── parser.py           # XML parsing and affiliation extraction
+│   └── filters.py          # Company detection logic (regex etc.)
+│
+├── data/                   # Output CSVs saved here
+├── tests/                  # Optional test files (e.g. test_api.py)
+├── pyproject.toml          # Poetry project settings
+├── README.md
+└── .gitignore
 
 ---
 
@@ -33,7 +56,7 @@ This tool automates the process of:
 
 ### 1. Clone the Repository
 
-git clone https://github.com/your-username/pubmed_company_filter.git  
+git clone https://github.com/ChandrikaBhuvana/pubmed_company_filter.git  
 cd pubmed_company_filter
 
 ### 2. Install Dependencies Using Poetry
@@ -42,7 +65,7 @@ poetry install
 
 ### 3. Run the CLI Tool
 
-poetry run python cli.py --query "your search query" --max-results 10 --output data/results.csv
+poetry run get-papers-list --query "your search query" --max-results 10 --output data/results.csv
 
 ---
 
@@ -59,19 +82,19 @@ poetry run python cli.py --query "your search query" --max-results 10 --output d
   Number of results to fetch (default: 10)
 
 - `--output <file.csv>`  
-  Save output to the specified CSV file
+  Save output to the specified CSV file. If not specified, results are printed to the console.
 
 - `--debug`  
-  Show internal logs (useful for transparency and debugging)
+  Show internal logs for API calls and filtering logic
 
 - `--help`  
   Show usage instructions
 
 ---
 
-### ✅ Example
+## ✅ Example Usage
 
-poetry run python cli.py --query "cancer AND 2024[PDAT]" --max-results 15 --output data/cancer.csv --debug
+poetry run get-papers-list --query "cancer AND 2024[PDAT]" --max-results 15 --output data/cancer.csv --debug
 
 ---
 
@@ -90,15 +113,19 @@ Each filtered article in the CSV includes:
 
 ## 🏭 How Company Affiliations Are Detected
 
-The tool parses each author's affiliations from the PubMed XML metadata and uses regex pattern matching to detect company associations.
+The tool parses each author's affiliations and uses regex-based pattern matching to detect **company associations**.
 
 ### Keywords Checked
 
-Inc, LLC, Ltd, Corporation, Company, Pharma, Technologies, Solutions, Industries, and known company names like Pfizer, Roche, Genentech, Amgen, etc.
+> Inc, LLC, Ltd, Corporation, Company, Pharma, Technologies, Solutions, Industries  
+> + known names like Pfizer, Roche, Genentech, Amgen, etc.
 
-If at least one author's affiliation matches a company-related term, the paper is included.
+If **at least one** author's affiliation matches a company-related pattern, the article is kept.
 
-When using `--debug`, the tool will print each author's affiliation and tag it as COMPANY or non-company.
+When `--debug` is enabled, affiliations are printed with tags like:
+
+[DEBUG] Affiliation: Genentech Inc. --> COMPANY  
+[DEBUG] Affiliation: Stanford University --> non-company
 
 ---
 
@@ -107,29 +134,28 @@ When using `--debug`, the tool will print each author's affiliation and tag it a
 Example row:
 
 pmid,title,publication_date,non_academic_authors,company_affiliations,emails  
-40624840,"Impact of antibody Fc engineering...",2025-Dec,"['Eric Stefanich', 'Xiaoting Wang']","['Genentech Inc', 'Amgen Inc']",[]
+40624840,"Impact of antibody Fc engineering...",2025-12-01,"['Eric Stefanich', 'Xiaoting Wang']","['Genentech Inc', 'Amgen Inc']",[]
 
 ---
 
 ## 🤖 LLM Usage
 
-This project was built with the help of ChatGPT (OpenAI) to:
+This project was built using **ChatGPT** to:
 
 - Design filtering logic and regex patterns  
-- Debug API integration  
-- Structure the CLI using Typer  
-- Write beginner-friendly documentation and clean output formats  
+- Debug and test PubMed API integration  
+- Structure the CLI with `typer`  
+- Improve documentation, code clarity, and output formatting
 
 ---
 
 ## 🧪 Sample Run (Debug Mode)
 
-poetry run python cli.py --query "drug development Pfizer Roche" --max-results 5 --output data/drug_dev_companies.csv --debug
+poetry run get-papers-list --query "drug development Pfizer Roche" --max-results 5 --output data/drug_dev_companies.csv --debug
 
-Output:
+Output (truncated):
 
 [DEBUG] Retrieved 5 PMIDs  
-[DEBUG] Processing article with PMID: 40624840  
 [DEBUG] Author: Frank R Brennan, Affiliation: UCB Pharma --> COMPANY  
 ...  
 Filtered down to 1 company-affiliated articles.  
@@ -139,13 +165,11 @@ Saved 1 records to data/drug_dev_companies.csv
 
 ## 📞 Contact
 
-Created by: Bhuvana Chandrika Mukkolla  
-
+Created by: **Bhuvana Chandrika Mukkolla**  
+📧 mukkollabhuvanachandrika@gmail.com
 
 ---
 
 ## 📎 License
 
 This project is licensed for academic demonstration use only.
-
----
