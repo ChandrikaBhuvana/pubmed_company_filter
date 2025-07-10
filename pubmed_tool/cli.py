@@ -1,6 +1,7 @@
 # === External Modules ===
 import typer  # Typer is used to build the command-line interface
 from typing import Optional  # Needed for optional output_file
+import pandas as pd
 
 # === Internal Imports ===
 from pubmed.api import search_papers, fetch_metadata  # Functions for searching and fetching PubMed data
@@ -67,7 +68,6 @@ def search(
         if not has_company_author(all_affiliations, debug=debug):
             continue  # Skip non-company papers
 
-        # Identify non-academic authors and their company affiliations
         non_academic_authors = []
         company_affiliations = set()
 
@@ -81,8 +81,8 @@ def search(
             "pmid": article["pmid"],
             "title": article["title"],
             "publication_date": article["publication_date"],
-            "non_academic_authors": list(set(non_academic_authors)),  # deduplicated
-            "company_affiliations": list(company_affiliations),  # deduplicated
+            "non_academic_authors": list(set(non_academic_authors)),
+            "company_affiliations": list(company_affiliations),
             "emails": article["emails"]
         })
 
@@ -103,15 +103,17 @@ def search(
     typer.echo(f"  Emails: {first['emails']}")
 
     # --- Step 6: Save or Print Output ---
+    df = pd.DataFrame(final_output)
+
     if output_file:
-        import pandas as pd
-        df = pd.DataFrame(final_output)
         df.to_csv(output_file, index=False)
         typer.echo(f"Saved {len(df)} records to {output_file}")
     else:
         typer.echo("Printing result to console:")
-        for row in final_output:
-            typer.echo(row)
+        try:
+            typer.echo(df.to_markdown(index=False))
+        except Exception:
+            typer.echo(df.to_string(index=False))  # Fallback if rich-markdown fails
 
 # === Entry Point ===
 if __name__ == "__main__":

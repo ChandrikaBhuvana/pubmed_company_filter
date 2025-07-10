@@ -140,7 +140,7 @@ Saved 1 records to data/drug_dev_companies.csv
 ## 📞 Contact
 
 Created by: Bhuvana Chandrika Mukkolla  
-Feel free to reach out via GitHub or email if you have questions or feedback.
+
 
 ---
 

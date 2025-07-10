@@ -1,9 +1,9 @@
 [project]
-name = "pubmed-company-filter"
+name = "pubmed_tool"
 version = "0.1.0"
-description = ""
+description = "CLI tool to fetch and filter PubMed papers by company affiliation"
 authors = [
-    {name = "Bhuvana Chandrika",email = "mukkollabhuvanachandrika@gmail.com"}
+    {name = "Bhuvana Chandrika", email = "mukkollabhuvanachandrika@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -20,4 +20,8 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-package-mode = false
+package-mode = true
+packages = [{ include = "pubmed_tool" }]
+
+[tool.poetry.scripts]
+get-papers-list = "pubmed_tool.cli:app"
